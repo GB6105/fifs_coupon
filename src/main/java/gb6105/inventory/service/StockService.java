@@ -2,17 +2,20 @@ package gb6105.inventory.service;
 
 import gb6105.inventory.domain.Stock;
 import gb6105.inventory.repository.StockRepository;
+import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class StockService {
 
     private final StockRepository stockRepository;
+    private final RedissonClient redissonClient;
 
-    public StockService(StockRepository stockRepository) {
-        this.stockRepository = stockRepository;
-    }
 
     @Transactional
     public void decreaseStock(Long id, Long quantity){
@@ -34,4 +37,6 @@ public class StockService {
         stock.decrease(quantity);
         // 갱신된 값 저장
     }
+
+
 }

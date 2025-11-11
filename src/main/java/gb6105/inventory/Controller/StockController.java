@@ -1,5 +1,6 @@
 package gb6105.inventory.Controller;
 
+import gb6105.inventory.service.StockFacade;
 import gb6105.inventory.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/stocks")
 public class StockController {
     private final StockService stockService;
+    private final StockFacade stockFacade;
 
     @PostMapping({"/{stockId}/decrease"})
     public ResponseEntity<Void> decreaseStock(@PathVariable Long stockId, @RequestParam Long quantity) {
@@ -35,4 +37,13 @@ public class StockController {
         }
     }
 
+    @PostMapping("{stockId}/decrease/redis")
+    public ResponseEntity<Void> redisLockStock(@PathVariable Long stockId, @RequestParam Long quantity) {
+        try{
+            stockFacade.decreaseStockWithRedis(stockId, quantity);
+            return ResponseEntity.ok().build();
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
