@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long couponId;
 
     private String name;
 
     private int total_quantity;
 
-    public Coupon(long id, String name, int total_quantity) {
-        this.id = id;
+    public Coupon(Long couponId, String name, int total_quantity) {
+        this.couponId = couponId;
         this.name = name;
         this.total_quantity = total_quantity;
     }
