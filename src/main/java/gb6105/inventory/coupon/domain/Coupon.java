@@ -1,5 +1,6 @@
 package gb6105.inventory.coupon.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,14 +16,18 @@ import lombok.NoArgsConstructor;
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "coupon_id")
     private Long couponId;
 
     private String name;
 
     private int total_quantity;
 
-    public Coupon(Long couponId, String name, int total_quantity) {
-        this.couponId = couponId;
+    /**
+     * @param name
+     * @param total_quantity
+     */
+    public Coupon(String name, int total_quantity) {
         this.name = name;
         this.total_quantity = total_quantity;
     }
