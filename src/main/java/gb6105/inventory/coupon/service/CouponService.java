@@ -85,6 +85,30 @@ public class CouponService {
 
     }
 
+    // ⭐ 외부(Worker)에서 호출할 DB 성공 기록 트랜잭션 메서드 추가
+    @Transactional
+    public void saveSuccessIssue(String email, Long couponId) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("회원을 찾을 수 없습니다. %s", email)));
+
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("쿠폰 정보를 찾을 수 없습니다. ID: %d", couponId)));
+
+
+        saveIssueResult(member, coupon, IssueStatus.SUCCESS);
+    }
+
+    @Transactional
+    public void saveFailIssue(String email, Long couponId, String reason) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("회원을 찾을 수 없습니다. %s", email)));
+
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("쿠폰 정보를 찾을 수 없습니다. ID: %d", couponId)));
+
+        saveIssueResult(member, coupon, IssueStatus.FAIL);
+    }
+
     private void saveIssueResult(Member member, Coupon coupon, CouponIssueHistory.IssueStatus status) {
         CouponIssueHistory history = new CouponIssueHistory(member, coupon, status);
         historyRepository.save(history);

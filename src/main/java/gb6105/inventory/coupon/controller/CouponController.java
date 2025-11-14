@@ -1,8 +1,10 @@
 package gb6105.inventory.coupon.controller;
 
 import gb6105.inventory.coupon.dto.CouponIssueRequest;
+import gb6105.inventory.coupon.service.CouponQueueService;
 import gb6105.inventory.coupon.service.CouponService;
 import gb6105.inventory.coupon.service.CouponServiceRedisson;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CouponController {
     private final CouponService couponService;
     private final CouponServiceRedisson couponServiceRedisson;
+    private final CouponQueueService couponQueueService;
 
     @PostMapping("/issue/lock")
     public ResponseEntity<String> issueCoupon(@RequestBody CouponIssueRequest request) {
@@ -68,6 +71,24 @@ public class CouponController {
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"서버 오류가 발생했습니다.\"}");
+        }
+    }
+    @PostMapping("/issue/redis")
+    public ResponseEntity<String> issueCouponRedis(@RequestBody CouponIssueRequest request) {
+
+        try {
+            // 1. 요청을 Redis Queue에 넣고 즉시 반환
+            // Controller는 DB 접근 없이 큐잉 작업만 수행합니다.
+            couponQueueService.enqueueCouponIssueRequest(request.email(), request.couponId());
+
+            // 2. HTTP 202 Accepted 응답 (접수 완료, 비동기 처리 예정)
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body("쿠폰 발급 요청이 성공적으로 접수되었습니다. 잠시 후 결과를 확인해주세요.");
+
+        } catch (Exception e) {
+            // 큐 삽입 자체의 오류 (Redis 연결 문제 등) 발생 시
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("error 요청 접수 중 서버 오류가 발생했습니다.");
         }
     }
 }
