@@ -34,7 +34,8 @@ dependencies {
 	implementation 'mysql:mysql-connector-java:8.0.28'
 
 	// Redis Redisson library
-	implementation 'org.redisson:redisson-spring-boot-starter:3.17.4'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.redisson:redisson-spring-boot-starter:3.27.1'
 }
 
 tasks.named('test') {

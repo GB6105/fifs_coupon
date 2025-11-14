@@ -21,7 +21,7 @@ public class DataInitializer {
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
         if(couponRepository.findById(1L).isEmpty()){
-            couponRepository.save(new Coupon("coffee",100));
+            couponRepository.save(new Coupon("coffee",10));
         }
 
         if (memberRepository.count() == 0) { // 데이터가 없을 때만 실행
