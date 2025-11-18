@@ -1,6 +1,7 @@
 package gb6105.inventory.coupon.service;
 
 
+import gb6105.inventory.coupon.component.CouponIssuedEvent;
 import gb6105.inventory.coupon.domain.Coupon;
 import gb6105.inventory.coupon.domain.CouponIssueHistory;
 import gb6105.inventory.coupon.domain.CouponIssueHistory.IssueStatus;
@@ -8,6 +9,8 @@ import gb6105.inventory.coupon.repository.CouponRepository;
 import gb6105.inventory.coupon.repository.CouponIssueHistoryRepository;
 import gb6105.inventory.coupon.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,9 @@ public class CouponService {
     private final MemberRepository memberRepository;
     private final CouponRepository couponRepository;
     private final CouponIssueHistoryRepository historyRepository;
+
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
 
     @Transactional
     // lock을 사용하지 않은 DB 메서드 -> 동시성 이슈 발생 확인 용
@@ -94,6 +100,7 @@ public class CouponService {
         coupon.decreaseQuantity();
         // 발급 이력 저장
         saveIssueResult(memberEmail, couponId, IssueStatus.SUCCESS.getMessage());
+        eventPublisher.publishEvent(new CouponIssuedEvent(email, couponId));
         System.out.println("쿠폰 발급 성공 " + memberEmail);
     }
 

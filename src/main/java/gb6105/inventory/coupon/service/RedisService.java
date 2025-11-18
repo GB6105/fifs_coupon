@@ -14,11 +14,4 @@ public class RedisService {
         redisTemplate.opsForValue().set(COUNPON_STOCK_PREFIX + couponId, String.valueOf(quantity));
     }
 
-    public Long decreaseStock(Long couponId) {
-        return redisTemplate.opsForValue().decrement(COUNPON_STOCK_PREFIX + couponId);
-    }
-
-    public Long increaseStock(Long couponId) {
-        return redisTemplate.opsForValue().increment(COUNPON_STOCK_PREFIX + couponId);
-    }
 }

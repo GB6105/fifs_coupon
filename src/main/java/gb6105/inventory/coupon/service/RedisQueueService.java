@@ -12,14 +12,11 @@ public class RedisQueueService {
     private static final String COUPON_ISSUE_QUEUE_KEY = "coupon:issue:queue";
 
     public void enqueueCouponIssueRequest(String email, Long couponId) {
-
+        // 요청을 큐에 담은 시간을 포함시킴
         long timestamp = Instant.now().toEpochMilli();
-
-//        String requestMessage = String.format("%s:%d", email, couponId);
-//        redisTemplate.opsForList().rightPush(COUPON_ISSUE_QUEUE_KEY, requestMessage);
-        // 메시지 구조: email:couponId:timestamp
         String requestMessage = String.format("%s:%d:%d", email, couponId, timestamp);
 
+        // 큐에 요청을 push
         redisTemplate.opsForList().rightPush(COUPON_ISSUE_QUEUE_KEY, requestMessage);
     }
 

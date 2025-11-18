@@ -133,7 +133,7 @@ public class CouponController {
             // Controller에서는 DB 접근 없이 큐잉 작업만 수행
             couponQueueService.enqueueCouponIssueRequest(request.email(), request.couponId());
 
-            // 2. HTTP 202 Accepted 응답 (접수 완료, 비동기 처리 예정)
+            // HTTP 202 Accepted 응답 (접수 완료, 비동기 처리 예정)
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .body("쿠폰 발급 요청이 성공적으로 접수되었습니다. 잠시 후 결과를 확인해주세요.");
 

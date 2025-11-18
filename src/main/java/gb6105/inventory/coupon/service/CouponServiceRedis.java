@@ -51,6 +51,5 @@ public class CouponServiceRedis {
                 lock.unlock();
             }
         }
-        issuedMembers.add(email);
     }
 }
