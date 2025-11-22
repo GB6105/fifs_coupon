@@ -19,31 +19,31 @@ public class RedissonConfig {
     @Value("${spring.data.redis.port}")
     private int redisPort;
 
-//    @Value("${spring.data.redis.password}")
-//    private String redisPassword;
+    @Value("${spring.data.redis.password}")
+    private String redisPassword;
 
     private static final String REDISSON_HOST_PREFIX = "redis://";
-
-    @Bean
-    public RedissonClient redissonClient() {
-        RedissonClient redisson;
-        Config config = new Config();
-        config.useSingleServer()
-                .setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort);
-        redisson = Redisson.create(config);
-        return redisson;
-    }
 
 //    @Bean
 //    public RedissonClient redissonClient() {
 //        RedissonClient redisson;
 //        Config config = new Config();
 //        config.useSingleServer()
-//                .setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort)
-//                .setPassword(redisPassword);
+//                .setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort);
 //        redisson = Redisson.create(config);
 //        return redisson;
 //    }
+
+    @Bean
+    public RedissonClient redissonClient() {
+        RedissonClient redisson;
+        Config config = new Config();
+        config.useSingleServer()
+                .setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort)
+                .setPassword(redisPassword);
+        redisson = Redisson.create(config);
+        return redisson;
+    }
 
     private final RedisConnectionFactory connectionFactory;
 
