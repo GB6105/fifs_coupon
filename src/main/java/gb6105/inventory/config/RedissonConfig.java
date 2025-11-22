@@ -8,11 +8,9 @@ import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 @Configuration
-@DependsOn("redisConnectionFactory")
 public class RedissonConfig {
 
     @Value("${spring.data.redis.host}")
@@ -21,8 +19,6 @@ public class RedissonConfig {
     @Value("${spring.data.redis.port}")
     private int redisPort;
 
-    @Value("${spring.data.redis.password}")
-    private String redisPassword;
 
     private static final String REDISSON_HOST_PREFIX = "redis://";
 
@@ -35,6 +31,8 @@ public class RedissonConfig {
 //        redisson = Redisson.create(config);
 //        return redisson;
 //    }
+    @Value("${spring.data.redis.password}")
+    private String redisPassword;
 
     @Bean
     public RedissonClient redissonClient() {
