@@ -61,47 +61,4 @@ public class CouponServiceQueue {
             }
         }
     }
-
-    private void issueCouponSequentially(String email, Long couponId) {
-
-        String key = ISSUED_MEMBER_SET_PREFIX + couponId;
-        RSet<String> issuedMembers = redissonClient.getSet(key);
-
-        // redis에서 발급 이력을 확인
-        if(issuedMembers.contains(email)) {
-            System.out.println("이미 쿠폰을 발급 받았습니다." + email);
-            throw new IllegalStateException("이미 쿠폰을 발급 받았습니다.");
-        }
-
-        //분산 락 로직
-        String lockName = COUPON_LOCK_PREFIX + couponId;
-        RLock lock = redissonClient.getLock(lockName);
-        long waitTime = 1; // 락 획득 대기 시간 (짧게 설정)
-        long leastTime = 3; // 락 유지 시간 (트랜잭션 시간보다 길게 설정)
-        TimeUnit time = TimeUnit.SECONDS;
-
-        try {
-            boolean isLocked = lock.tryLock(waitTime, leastTime, time);
-
-            if (!isLocked) {
-                couponService.saveIssueResult(email, couponId, IssueStatus.FAIL.getMessage());
-                System.out.println("락 획득 실패: " + email);
-                return;
-            }
-
-            // 락 획득 성공: DB 트랜잭션 실행
-            couponService.issueCouponCore(email,couponId);
-            System.out.println("✅ 순서 처리 성공: " + email + " | 락 해제");
-
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            System.out.println("처리 실패: " + e.getMessage());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.out.println("락 획득 중 인터럽트");
-        } finally {
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
-        }
-    }
 }
