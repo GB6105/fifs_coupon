@@ -1,13 +1,17 @@
 package gb6105.inventory.coupon.controller;
 
 import gb6105.inventory.coupon.dto.CouponIssueRequest;
+import gb6105.inventory.coupon.dto.StockResponse;
 import gb6105.inventory.coupon.service.RedisQueueService;
 import gb6105.inventory.coupon.service.CouponService;
 import gb6105.inventory.coupon.service.CouponServiceRedisson;
 import gb6105.inventory.coupon.service.CouponServiceRedis;
+import gb6105.inventory.coupon.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +25,7 @@ public class CouponController {
     private final CouponServiceRedisson couponServiceRedisson;
     private final CouponServiceRedis couponServiceRedis;
     private final RedisQueueService couponQueueService;
+    private final RedisService redisService;
 
     @PostMapping("/issue")
     public ResponseEntity<String> issueCoupon(@RequestBody CouponIssueRequest request) {
@@ -142,5 +147,12 @@ public class CouponController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("error 요청 접수 중 서버 오류가 발생했습니다.");
         }
+    }
+
+    @GetMapping("/stock/{couponId}")
+    public ResponseEntity<StockResponse> getCouponStockFromRedis(@PathVariable("couponId") Long couponId) {
+        int stock = redisService.getCurrentStock(couponId);
+        StockResponse response = new StockResponse(couponId, stock);
+        return ResponseEntity.ok(response);
     }
 }
